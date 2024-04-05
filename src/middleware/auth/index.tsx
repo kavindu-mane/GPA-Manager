@@ -1,17 +1,15 @@
 import { Navigate, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/providers";
 import { useEffect, useState } from "react";
-import { Spin } from "antd";
 import { useCookies } from "react-cookie";
-import { NotFound } from "@/pages/404";
 import useStableRefs from "@/utils/use-stable-refs";
+import { Loading } from "@/components";
 
-export default function AuthMiddleware({ requiredPermission = "" }) {
-  const { user, permissions, setUserValue, setPermissionsValue } = useAuth();
+export const AuthMiddleware = () => {
+  const { user, setUserValue } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
   // initialize axios private instance for authorized requests
-  // initialize notification for notifications handling
   const { axiosPrivateInstance } = useStableRefs();
   const [loading, setLoading] = useState(true);
   // get cookies
@@ -30,18 +28,11 @@ export default function AuthMiddleware({ requiredPermission = "" }) {
     async function verifyUser() {
       try {
         const { data } =
-          await axiosPrivateInstance.current.get("/user/check-token");
-        if (data?.data?.must_change_password !== 1) {
-          setUserValue(data?.data);
-          setPermissionsValue(data?.data?.user_group?.permissions);
-        }
+          await axiosPrivateInstance.current.get("/user/check-user");
+        setUserValue(data?.data);
       } catch (error) {
         setUserValue(null);
         navigate("/login", {
-          state: {
-            from: location,
-            error: "Session expired. please login again.",
-          },
           replace: true,
         });
       } finally {
@@ -61,7 +52,6 @@ export default function AuthMiddleware({ requiredPermission = "" }) {
     location,
     location.pathname,
     navigate,
-    setPermissionsValue,
     setUserValue,
     user,
   ]);
@@ -69,36 +59,18 @@ export default function AuthMiddleware({ requiredPermission = "" }) {
   // if user is not loaded yet
   if (loading)
     return (
-      <Spin
-        className="flex h-screen w-screen items-center justify-center"
-        size="large"
-      />
+      <div className="flex h-screen w-screen items-center justify-center">
+        <Loading />
+      </div>
     );
 
-  // if user is logged in and does have required permission
-  if (
-    user !== null &&
-    (permissions.includes(requiredPermission) || requiredPermission === "")
-  )
-    return <Outlet />;
+  // if user is logged in
+  if (user !== null) return <Outlet />;
 
   // if user is not logged in
   if (user === null) {
-    const sessionState = localStorage.getItem("sessionActive") === "true";
     // clear session active state from local storage
     localStorage.removeItem("sessionActive");
-    return (
-      <Navigate
-        to="/login"
-        state={{
-          from: location,
-          error: sessionState ? "Session expired. please login again." : "",
-        }}
-        replace
-      />
-    );
+    return <Navigate to="/login" replace />;
   }
-
-  // if user doesn't have required permission
-  if (!permissions.includes(requiredPermission)) return <NotFound />;
-}
+};

@@ -19,21 +19,13 @@ export const useAxios = () => {
   const addHeaders = (config: InternalAxiosRequestConfig<any>) => {
     if (!config?.headers["Authorization"]) {
       config.headers["Authorization"] = `Bearer ${cookies["token"]}`;
-      config.headers["X-CSRFToken"] = cookies["XSRF-TOKEN"];
     }
     return config;
   };
 
   axiosPrivateInstance.interceptors.request.use(
     async (config) => {
-      if (!cookies["XSRF-TOKEN"]) {
-        await axios.get("/sanctum/csrf-cookie").then(() => {
-          addHeaders(config);
-        });
-      } else {
-        addHeaders(config);
-      }
-
+      addHeaders(config);
       return config;
     },
     (error) => Promise.reject(error),
