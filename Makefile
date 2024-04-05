@@ -4,6 +4,9 @@ setup:
 dev:
 	@make -j 2 dev-frontend dev-api
 
+migrate:
+	cd ./api && bunx prisma migrate dev --name init
+
 install-frontend:
 	bun install
 

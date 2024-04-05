@@ -1,7 +1,6 @@
 import { z } from "zod";
 
-// form schema for login validation
-export const LoginFormSchema = z.object({
+export const loginSchema = z.object({
   email: z
     .string()
     .min(1, { message: "Email field has to be filled." })
@@ -12,8 +11,7 @@ export const LoginFormSchema = z.object({
     .max(32, { message: "Password should contain maximum 32 characters." }),
 });
 
-// form schema for register validation
-export const RegisterFormSchema = z
+export const registerSchema = z
   .object({
     name: z
       .string()

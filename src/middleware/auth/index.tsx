@@ -28,7 +28,7 @@ export const AuthMiddleware = () => {
     async function verifyUser() {
       try {
         const { data } =
-          await axiosPrivateInstance.current.get("/user/check-user");
+          await axiosPrivateInstance.current.get("/user");
         setUserValue(data?.data);
       } catch (error) {
         setUserValue(null);
