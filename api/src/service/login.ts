@@ -5,6 +5,7 @@ import { setCookie } from "hono/cookie";
 
 export const Login = async (c: Context, prisma: PrismaClient) => {
   const { email, password } = await c.req.json();
+
   try {
     // check user exists or not
     const user = await prisma.user.findUnique({
@@ -71,6 +72,12 @@ export const Login = async (c: Context, prisma: PrismaClient) => {
       );
     }
   } catch (error) {
-    return;
+    return c.json(
+      {
+        success: false,
+        message: "Internal server error",
+      },
+      500,
+    );
   }
 };

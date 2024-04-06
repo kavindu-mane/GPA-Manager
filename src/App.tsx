@@ -16,6 +16,7 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/" element={<AuthMiddleware />}>
             <Route index element={<Dashboard />} />
+            <Route path="/settings" element={<Dashboard />} />
           </Route>
           <Route path="/*" element={<NotFound />} />
         </Routes>

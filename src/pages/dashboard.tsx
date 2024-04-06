@@ -14,10 +14,11 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/providers";
 import useStableRefs from "@/utils/use-stable-refs";
 import { useToast } from "@/components/ui/use-toast";
+import { DashboardMain } from "./dashboards";
 
 export const Dashboard = () => {
   const { user } = useAuth();
@@ -26,6 +27,21 @@ export const Dashboard = () => {
   const navigate = useNavigate();
   // toast hook
   const { toast } = useToast();
+  // location hook
+  const location = useLocation();
+
+  const navigationBarSetup = [
+    {
+      url: "/",
+      text: "Dashboard",
+      icon: <IoIosHome className="h-4 w-4" />,
+    },
+    {
+      url: "/settings",
+      text: "Settings",
+      icon: <IoSettingsSharp className="h-4 w-4" />,
+    },
+  ];
 
   // logout function
   const logout = async () => {
@@ -65,20 +81,15 @@ export const Dashboard = () => {
           {/* navigation bar */}
           <div className="flex-1">
             <nav className="grid items-start px-2 text-sm font-medium lg:px-4">
-              <Link
-                to="#"
-                className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
-              >
-                <IoIosHome className="h-4 w-4" />
-                Dashboard
-              </Link>
-              <Link
-                to="#"
-                className="flex items-center gap-3 rounded-lg bg-muted px-3 py-2 text-primary transition-all hover:text-primary"
-              >
-                <IoSettingsSharp className="h-4 w-4" />
-                Products
-              </Link>
+              {navigationBarSetup.map((item) => (
+                <Link
+                  to={item.url}
+                  className={`flex items-center gap-3 rounded-lg px-3 py-2 ${item.url === location.pathname ? "bg-muted text-primary" : "text-muted-foreground"} transition-all hover:text-primary`}
+                >
+                  {item.icon}
+                  {item.text}
+                </Link>
+              ))}
             </nav>
           </div>
         </div>
@@ -102,26 +113,21 @@ export const Dashboard = () => {
             <SheetContent side="left" className="flex flex-col">
               <nav className="grid gap-2 text-lg font-medium">
                 <Link
-                  to="#"
+                  to="/"
                   className="flex items-center gap-2 text-lg font-semibold"
                 >
                   <TbHexagonLetterG className="h-6 w-6" />
-                  <span className="sr-only">GPA Manager</span>
+                  <span className="">GPA Manager</span>
                 </Link>
-                <Link
-                  to="#"
-                  className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
-                >
-                  <IoIosHome className="h-5 w-5" />
-                  Dashboard
-                </Link>
-                <Link
-                  to="#"
-                  className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
-                >
-                  <IoSettingsSharp className="h-5 w-5" />
-                  Settings
-                </Link>
+                {navigationBarSetup.map((item) => (
+                  <Link
+                    to={item.url}
+                    className={`${item.url === location.pathname ? "bg-muted text-primary" : "text-muted-foreground"} mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 hover:text-foreground`}
+                  >
+                    {item.icon}
+                    {item.text}
+                  </Link>
+                ))}
               </nav>
             </SheetContent>
           </Sheet>
@@ -175,8 +181,9 @@ export const Dashboard = () => {
             className="flex flex-1 items-center justify-center rounded-lg border border-dashed shadow-sm"
             x-chunk="dashboard-02-chunk-1"
           >
-            <div className="flex flex-col items-center gap-1 text-center">
+            <div className="flex h-full w-full flex-col items-center gap-1 text-center">
               {/* to be implemented */}
+              <DashboardMain />
             </div>
           </div>
         </main>
