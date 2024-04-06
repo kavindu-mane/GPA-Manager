@@ -8,7 +8,9 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { useToast } from "@/components/ui/use-toast";
 import { errorTypes } from "@/types";
+import { transferZodErrors } from "@/utils/transfer-zod-errors";
 import { RegisterFormSchema } from "@/validations";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
@@ -32,6 +34,8 @@ export const Register = () => {
   // loading state
   const [, setLoading] = useState(false);
   const navigate = useNavigate();
+  // toast hook
+  const { toast } = useToast();
 
   // form hook
   const form = useForm<z.infer<typeof RegisterFormSchema>>({
@@ -49,18 +53,25 @@ export const Register = () => {
     setLoading(true);
     setErrors(errorDefault);
     await axios
-      .post("/user/register", data)
+      .post("/register", data)
       .then((res) => {
-        if (res.status === 200) navigate("/", { replace: true });
+        if (res.status === 201) {
+          toast({
+            title: "Account created successfully",
+            description: "You can now login to your account",
+            className: "bg-green-500 text-white",
+          });
+          navigate("/login", { replace: true });
+        }
       })
       .catch((err) => {
-        if (err.response.status === 422) {
+        if (err?.response?.status === 400) {
           // if any validation error occurred
-          setErrors((prev) => ({ ...prev, ...err.response.data.errors }));
+          setErrors(transferZodErrors(err.response.data).error);
         } else {
           setErrors((prev) => ({
             ...prev,
-            message: err.response.data.message,
+            message: err?.response?.data.message || err.message || err,
           }));
         }
       })
@@ -73,7 +84,7 @@ export const Register = () => {
   return (
     <div className="h-screen w-full lg:grid lg:min-h-[600px] lg:grid-cols-2 xl:min-h-[800px]">
       {/*left side -  image */}
-      <div className="bg-muted hidden lg:block">
+      <div className="hidden bg-muted lg:block">
         <img
           src="/assets/login.jpg"
           alt="Image"
@@ -87,7 +98,7 @@ export const Register = () => {
         <div className="mx-auto grid w-full max-w-md gap-6 rounded-sm p-6 shadow-sm ring-[1px] ring-slate-200 drop-shadow-xl">
           <div className="grid gap-2 text-center">
             <h1 className="text-3xl font-bold">Register</h1>
-            <p className="text-muted-foreground text-balance">
+            <p className="text-balance text-muted-foreground">
               Enter your details below to register to new account
             </p>
           </div>

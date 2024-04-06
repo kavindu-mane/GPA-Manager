@@ -8,7 +8,9 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { useToast } from "@/components/ui/use-toast";
 import { errorTypes } from "@/types";
+import { transferZodErrors } from "@/utils/transfer-zod-errors";
 import { LoginFormSchema } from "@/validations";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
@@ -28,8 +30,10 @@ export const Login = () => {
   // error state
   const [errors, setErrors] = useState(errorDefault);
   // loading state
-  const [, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  // toast hook
+  const { toast } = useToast();
 
   // form hook
   const form = useForm<z.infer<typeof LoginFormSchema>>({
@@ -45,18 +49,25 @@ export const Login = () => {
     setLoading(true);
     setErrors(errorDefault);
     await axios
-      .post("/user/login", data)
+      .post("/login", data)
       .then((res) => {
-        if (res.status === 200) navigate("/", { replace: true });
+        if (res.status === 200) {
+          toast({
+            title: "Login successful",
+            description: "Redirecting to dashboard...",
+            className: "bg-green-500 text-white",
+          });
+          navigate("/", { replace: true });
+        }
       })
       .catch((err) => {
-        if (err.response.status === 422) {
+        if (err?.response?.status === 400) {
           // if any validation error occurred
-          setErrors((prev) => ({ ...prev, ...err.response.data.errors }));
+          setErrors(transferZodErrors(err.response.data).error);
         } else {
           setErrors((prev) => ({
             ...prev,
-            message: err.response.data.message,
+            message: err?.response?.data.message || err.message || err,
           }));
         }
       })
@@ -74,7 +85,7 @@ export const Login = () => {
         <div className="mx-auto grid w-full max-w-md gap-6 rounded-sm p-6 shadow-sm ring-[1px] ring-slate-200 drop-shadow-xl">
           <div className="grid gap-2 text-center">
             <h1 className="text-3xl font-bold">Login</h1>
-            <p className="text-muted-foreground text-balance">
+            <p className="text-balance text-muted-foreground">
               Enter your email below to login to your account
             </p>
           </div>
@@ -128,7 +139,7 @@ export const Login = () => {
                 {/*common error message */}
                 <FormMessage>{errors?.message}</FormMessage>
 
-                <Button type="submit" className="w-full">
+                <Button disabled={loading} type="submit" className="w-full">
                   Login
                 </Button>
               </form>
@@ -144,7 +155,7 @@ export const Login = () => {
         </div>
       </div>
       {/*right side -  image */}
-      <div className="bg-muted hidden lg:block">
+      <div className="hidden bg-muted lg:block">
         <img
           src="/assets/login.jpg"
           alt="Image"

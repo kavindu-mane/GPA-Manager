@@ -27,8 +27,7 @@ export const AuthMiddleware = () => {
 
     async function verifyUser() {
       try {
-        const { data } =
-          await axiosPrivateInstance.current.get("/user");
+        const { data } = await axiosPrivateInstance.current.get("/user");
         setUserValue(data?.data);
       } catch (error) {
         setUserValue(null);
@@ -69,8 +68,6 @@ export const AuthMiddleware = () => {
 
   // if user is not logged in
   if (user === null) {
-    // clear session active state from local storage
-    localStorage.removeItem("sessionActive");
     return <Navigate to="/login" replace />;
   }
 };

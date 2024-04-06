@@ -5,11 +5,8 @@ import { createContext, useContext } from "react";
 
 const defaultValue = {
   user: {
-    id: 0,
     name: "",
     email: "",
-    created_at: "",
-    updated_at: "",
   },
   setUserValue: (_newValue: any) => {},
 };

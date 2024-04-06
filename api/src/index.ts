@@ -3,8 +3,11 @@ import { prettyJSON } from "hono/pretty-json";
 import { cors } from "hono/cors";
 import { zValidator } from "@hono/zod-validator";
 import { PrismaClient } from "@prisma/client";
+import { bearerAuth } from "hono/bearer-auth";
+import { verify, decode } from "hono/jwt";
+import { validate as uuidValidate } from "uuid";
 import { loginSchema, registerSchema } from "./validation/schema";
-import { Register } from "./functions";
+import { Login, Logout, Register, WhoIAm } from "./service";
 
 const app = new Hono();
 const prisma = new PrismaClient();
@@ -25,21 +28,71 @@ app.notFound((c) =>
 );
 
 const api = new Hono();
-api.use("/api/*", cors());
+// cors setup
+app.use(
+  "/api/*",
+  cors({
+    origin: "http://localhost:3000",
+    allowHeaders: ["Content-Type", "Authorization"],
+    allowMethods: ["GET", "POST", "PUT", "DELETE"],
+    exposeHeaders: ["Content-Length"],
+    maxAge: 600,
+    credentials: true,
+  }),
+);
 
 // login route
-api.post("/login", zValidator("json", loginSchema), async (c) => {
-  const data = await c.req.json();
-  return c.json({
-    success: true,
-    message: `${data?.email} is ${data?.password}`,
-  });
-});
+api.post("/login", zValidator("json", loginSchema), async (c) =>
+  Login(c, prisma),
+);
 
 // register route
 api.post("/register", zValidator("json", registerSchema), async (c) =>
   Register(c, prisma),
 );
+
+// authorization middleware setup with bearer token
+api.use("/user/*", async (c, next) => {
+  const auth = bearerAuth({
+    verifyToken: async (token) => {
+      try {
+        // check if token is valid
+        const isValid = await verify(token, process.env.JWT_SECRET!);
+        if (isValid) {
+          const { payload } = decode(token);
+          // check if user is valid
+          const isValidUser = uuidValidate(payload.user);
+          if (!isValidUser) return false;
+          // check if user exists
+          const user = await prisma.session.findUnique({
+            where: {
+              id: payload.user,
+            },
+          });
+          // if user exists
+          if (user) {
+            c.set("jwtPayload", user);
+            return true;
+          }
+          // if user does not exist
+          return false;
+        }
+        // if token is invalid
+        return false;
+      } catch (e) {
+        // if any error occurs
+        return false;
+      }
+    },
+  });
+  return auth(c, next);
+});
+
+// get user route
+api.get("/user", async (c) => WhoIAm(c, prisma));
+
+//user logout route
+api.post("/user/logout", async (c) => Logout(c, prisma));
 
 // initialize the base path
 app.route("/api", api);

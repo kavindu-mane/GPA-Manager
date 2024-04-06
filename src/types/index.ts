@@ -9,9 +9,9 @@ export type errorTypes = {
 
 //  user account data type
 export type userDataType = {
-  id: number;
+  id?: number;
   name: string;
   email: string;
-  created_at: string;
-  updated_at: string;
+  created_at?: string;
+  updated_at?: string;
 };

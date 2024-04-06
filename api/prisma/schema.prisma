@@ -15,4 +15,13 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   password String
+  sessions Session[]
+}
+
+model Session{
+  id     String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  deletedAt DateTime @default(now())
+  userId  Int
+  user    User     @relation(fields: [userId], references: [id])
 }
