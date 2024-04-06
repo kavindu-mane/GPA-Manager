@@ -1,5 +1,6 @@
 setup:
 	@make -j 2 install-frontend install-api
+	@make env
 
 dev:
 	@make -j 2 dev-frontend dev-api
@@ -18,3 +19,6 @@ dev-frontend:
 
 dev-api:
 	cd ./api && bun run dev
+
+env:
+	cp .env.example .env && cp ./api/.env.example ./api/.env
