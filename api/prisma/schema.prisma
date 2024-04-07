@@ -8,20 +8,45 @@ datasource db {
 }
 
 model User {
-
-  id      Int      @id @default(autoincrement())
-  email   String   @unique
-  name    String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  password String
-  sessions Session[]
+  id          Int      @id @default(autoincrement())
+  email       String   @unique
+  name        String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  password    String
+  overallGpa  Float @default(0)
+  sessions    Session[]
+  semesters   Semester[]
 }
 
 model Session{
-  id     String   @id @default(uuid())
+  id        String   @id @default(uuid())
   createdAt DateTime @default(now())
   deletedAt DateTime @default(now())
-  userId  Int
-  user    User     @relation(fields: [userId], references: [id])
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model Semester {
+  id        String   @id @default(cuid())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  gpa       Float    @default(0)
+  totalCredits Int   @default(0)
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  courses   Course[] 
+}
+
+model Course {
+  id          Int        @id @default(autoincrement())
+  name        String
+  grade       String
+  credits     Int
+  gpa         Float      @default(0)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  semesterId  String
+  semester    Semester   @relation(fields: [semesterId], references: [id] , onDelete: Cascade)
 }
