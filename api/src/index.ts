@@ -6,8 +6,27 @@ import { PrismaClient } from "@prisma/client";
 import { bearerAuth } from "hono/bearer-auth";
 import { verify, decode } from "hono/jwt";
 import { validate as uuidValidate } from "uuid";
-import { loginSchema, registerSchema } from "./validation/schema";
-import { Login, Logout, Register, WhoIAm } from "./service";
+import {
+  addSemesterSchema,
+  addSubjectSchema,
+  loginSchema,
+  registerSchema,
+} from "./validation/schema";
+import {
+  AddSemester,
+  AddSubject,
+  DeleteSemester,
+  DeleteSubject,
+  GetSemester,
+  GetSubjects,
+  Login,
+  Logout,
+  Register,
+  Statistics,
+  UpdateSemester,
+  UpdateSubject,
+  WhoIAm,
+} from "./service";
 
 const app = new Hono();
 const prisma = new PrismaClient();
@@ -93,6 +112,47 @@ api.get("/user", async (c) => WhoIAm(c, prisma));
 
 //user logout route
 api.post("/user/logout", async (c) => Logout(c, prisma));
+
+// user get semester route
+api.get("/user/semester", async (c) => GetSemester(c, prisma));
+
+// user add semester route
+api.post(
+  "/user/semester/add",
+  zValidator("json", addSemesterSchema),
+  async (c) => AddSemester(c, prisma),
+);
+
+// delete semester route
+api.delete("/user/semester/delete/:id", async (c) => DeleteSemester(c, prisma));
+
+// update semester route
+api.put(
+  "/user/semester/update/:id",
+  zValidator("json", addSemesterSchema),
+  async (c) => UpdateSemester(c, prisma),
+);
+
+// user get subject route
+api.get("/user/subject", async (c) => GetSubjects(c, prisma));
+
+// user add subject route
+api.post("/user/subject/add", zValidator("json", addSubjectSchema), async (c) =>
+  AddSubject(c, prisma),
+);
+
+// user update subject route
+api.put(
+  "/user/subject/update/:id",
+  zValidator("json", addSubjectSchema),
+  async (c) => UpdateSubject(c, prisma),
+);
+
+// user delete subject route
+api.delete("/user/subject/delete/:id", async (c) => DeleteSubject(c, prisma));
+
+// user statistics route
+api.get("/user/statistics", async (c) => Statistics(c, prisma));
 
 // initialize the base path
 app.route("/api", api);
