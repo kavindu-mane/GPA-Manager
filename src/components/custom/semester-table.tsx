@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { MdArrowOutward } from "react-icons/md";
 import { Button } from "@/components/ui/button";
 import {
@@ -16,8 +17,10 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Link } from "react-router-dom";
+import { calculateGPA } from "@/utils/calculate-gpa";
+import { subjectDataType } from "@/types";
 
-export const SemesterTable = () => {
+export const SemesterTable = ({ data }: { data: any }) => {
   return (
     <Card className="xl:w-1/2">
       <CardHeader className="flex flex-row items-center">
@@ -28,7 +31,7 @@ export const SemesterTable = () => {
           </CardDescription>
         </div>
         <Button asChild size="sm" className="ml-auto gap-1">
-          <Link to="/">
+          <Link to="/results">
             View All
             <MdArrowOutward className="h-4 w-4" />
           </Link>
@@ -43,15 +46,20 @@ export const SemesterTable = () => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            <TableRow>
-              <TableCell className="text-start">
-                <div className="font-medium">Semester 1</div>
-                <div className="hidden text-sm text-muted-foreground md:inline">
-                  Credits : 19
-                </div>
-              </TableCell>
-              <TableCell className="text-right">3.97</TableCell>
-            </TableRow>
+            {/* map through the data and create a table row for each semester */}
+            {data?.map((semester: subjectDataType) => (
+              <TableRow key={semester.id}>
+                <TableCell className="text-start">
+                  <div className="font-medium">{semester.name}</div>
+                  <div className="hidden text-sm text-muted-foreground md:inline">
+                    Credits : 19
+                  </div>
+                </TableCell>
+                <TableCell className="text-right">
+                  {calculateGPA(semester?.totalCredits, semester?.gpa)}
+                </TableCell>
+              </TableRow>
+            ))}
           </TableBody>
         </Table>
       </CardContent>
