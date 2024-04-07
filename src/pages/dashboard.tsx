@@ -1,7 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { TbHexagonLetterG } from "react-icons/tb";
 import { IoIosHome } from "react-icons/io";
-import { IoSettingsSharp, IoSearch } from "react-icons/io5";
+import { IoSearch } from "react-icons/io5";
+import { PiExamBold } from "react-icons/pi";
 import { GiHamburgerMenu } from "react-icons/gi";
 import { FaUserCircle } from "react-icons/fa";
 import {
@@ -18,9 +19,10 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/providers";
 import useStableRefs from "@/utils/use-stable-refs";
 import { useToast } from "@/components/ui/use-toast";
-import { DashboardMain } from "./dashboards";
+import { CgArrowsExchangeV } from "react-icons/cg";
+import { ReactNode } from "react";
 
-export const Dashboard = () => {
+export const Dashboard = ({ children }: { children: ReactNode }) => {
   const { user } = useAuth();
   // initialize axios private instance for authorized requests
   const { axiosPrivateInstance } = useStableRefs();
@@ -37,9 +39,14 @@ export const Dashboard = () => {
       icon: <IoIosHome className="h-4 w-4" />,
     },
     {
-      url: "/settings",
-      text: "Settings",
-      icon: <IoSettingsSharp className="h-4 w-4" />,
+      url: "/results",
+      text: "Results",
+      icon: <PiExamBold className="h-4 w-4" />,
+    },
+    {
+      url: "/manage",
+      text: "Manage",
+      icon: <CgArrowsExchangeV className="h-4 w-4" />,
     },
   ];
 
@@ -81,8 +88,9 @@ export const Dashboard = () => {
           {/* navigation bar */}
           <div className="flex-1">
             <nav className="grid items-start px-2 text-sm font-medium lg:px-4">
-              {navigationBarSetup.map((item) => (
+              {navigationBarSetup.map((item, key) => (
                 <Link
+                  key={key}
                   to={item.url}
                   className={`flex items-center gap-3 rounded-lg px-3 py-2 ${item.url === location.pathname ? "bg-muted text-primary" : "text-muted-foreground"} transition-all hover:text-primary`}
                 >
@@ -119,8 +127,9 @@ export const Dashboard = () => {
                   <TbHexagonLetterG className="h-6 w-6" />
                   <span className="">GPA Manager</span>
                 </Link>
-                {navigationBarSetup.map((item) => (
+                {navigationBarSetup.map((item, key) => (
                   <Link
+                    key={key}
                     to={item.url}
                     className={`${item.url === location.pathname ? "bg-muted text-primary" : "text-muted-foreground"} mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 hover:text-foreground`}
                   >
@@ -162,8 +171,8 @@ export const Dashboard = () => {
                 </p>
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => navigate("/settings")}>
-                Settings
+              <DropdownMenuItem onClick={() => navigate("/results")}>
+                Results
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={() => logout()}>
@@ -175,7 +184,13 @@ export const Dashboard = () => {
         {/* main content area */}
         <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6">
           <div className="flex items-center">
-            <h1 className="text-lg font-semibold md:text-2xl">Dashboard</h1>
+            <h1 className="text-lg font-semibold md:text-2xl">
+              {
+                navigationBarSetup.find(
+                  (item) => item.url === location.pathname,
+                )?.text
+              }
+            </h1>
           </div>
           <div
             className="flex flex-1 items-center justify-center rounded-lg border border-dashed shadow-sm"
@@ -183,7 +198,7 @@ export const Dashboard = () => {
           >
             <div className="flex h-full w-full flex-col items-center gap-1 text-center">
               {/* to be implemented */}
-              <DashboardMain />
+              {children}
             </div>
           </div>
         </main>
