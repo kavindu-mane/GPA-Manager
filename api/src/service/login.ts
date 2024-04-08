@@ -2,6 +2,12 @@ import { PrismaClient } from "@prisma/client";
 import { Context } from "hono";
 import { sign } from "hono/jwt";
 import { setCookie } from "hono/cookie";
+/**
+ * @requires
+ * If you are run on Bun you need to comment bellow line .
+ * If you are run on Nodejs you need to uncomment bellow line.
+ */
+// import { compareSync } from "bcrypt";
 
 export const Login = async (c: Context, prisma: PrismaClient) => {
   const { email, password } = await c.req.json();
@@ -15,7 +21,21 @@ export const Login = async (c: Context, prisma: PrismaClient) => {
     });
     if (user) {
       // check password
+
+      /**
+       * @requires
+       * If you are run on Bun you need uncomment bellow hash function.
+       * If you are run on Nodejs you need to comment bellow hash function.
+       */
       const isMatch = await Bun.password.verify(password, user.password);
+
+      /**
+       * @requires
+       * If you are run on Nodejs you need uncomment bellow hash function.
+       * If you are run on Bun you need to comment bellow hash function.
+       */
+      // const isMatch = compareSync(password, user.password);
+
       // if password matches
       if (isMatch) {
         // get date for 30 days

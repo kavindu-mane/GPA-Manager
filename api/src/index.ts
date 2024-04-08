@@ -27,6 +27,12 @@ import {
   UpdateSubject,
   WhoIAm,
 } from "./service";
+/**
+ * @requires
+ * If you are run on Bun you need to comment bellow line .
+ * If you are run on Nodejs you need to uncomment bellow line.
+ */
+// import { serve } from "@hono/node-server";
 
 const app = new Hono();
 const prisma = new PrismaClient();
@@ -157,7 +163,24 @@ api.get("/user/statistics", async (c) => Statistics(c, prisma));
 // initialize the base path
 app.route("/api", api);
 
+/**
+ * @requires
+ * If you are run on Nodejs you need to comment bellow line .
+ * If you are run on Bun you need to uncomment bellow line.
+ */
+
 export default {
   port: 8000,
   fetch: app.fetch,
 };
+
+/**
+ * @requires
+ * If you are run on Bun you need to comment bellow line .
+ * If you are run on Nodejs you need to uncomment bellow line.
+ */
+
+// serve({
+//   port: 8000,
+//   fetch: app.fetch,
+// })

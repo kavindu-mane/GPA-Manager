@@ -211,7 +211,6 @@ export const ResultTable = ({
                   <AddSemester
                     setSubjects={setSubjects}
                     url="update"
-                    id={subject.id}
                     semester={subject}
                   />,
                 )}
@@ -299,7 +298,6 @@ export const ResultTable = ({
                                 setSubjects={setSubjects}
                                 subject={course}
                                 url="update"
-                                id={course.id}
                                 semester={subject.id}
                                 semesters={semesters}
                               />,

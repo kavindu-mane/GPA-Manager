@@ -1,6 +1,7 @@
 {
   "scripts": {
-    "dev": "bun run --hot src/index.ts"
+    "dev": "bun run --hot src/index.ts",
+    "dev:node": "tsx watch src/index.ts"
   },
   "dependencies": {
     "@hono/zod-validator": "^0.2.1",
@@ -12,7 +13,6 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
-    "@types/bcrypt": "^5.0.2",
     "@types/bun": "latest"
   },
   "name": "api",
