@@ -29,7 +29,7 @@ This project build on bun runtime environment. if you need this project on nodej
 
 _Setup_
 
-```
+```typescript
 // Bun
 make setup 
 
@@ -41,7 +41,7 @@ After running setup command you need add environment variables in `.env` files. 
 
 _Migrate Database_
 
-```
+```typescript
 // Bun
 make migrate
 
@@ -51,7 +51,7 @@ make migrate-node
 
 _Start Servers_
 
-```
+```typescript
 // Bun
 make dev
 
