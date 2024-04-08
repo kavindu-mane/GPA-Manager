@@ -52,7 +52,7 @@ export const SemesterTable = ({ data }: { data: any }) => {
                 <TableCell className="text-start">
                   <div className="font-medium">{semester.name}</div>
                   <div className="hidden text-sm text-muted-foreground md:inline">
-                    Credits : 19
+                    Credits : {semester.totalCredits}
                   </div>
                 </TableCell>
                 <TableCell className="text-right">

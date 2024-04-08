@@ -55,17 +55,15 @@ const errorDefault: errorTypes = {
 };
 
 export const AddSubject = ({
-  semesters,
-  setSubjects,
-  url = "add",
-  id,
-  semester,
-  subject,
+  semesters, // semester data : if update mode will come only current semester
+  setSubjects, // set all subject details state
+  url = "add", // url for the request
+  semester, // current semester id
+  subject, // current subject details
 }: {
   semesters: semesterDataType;
   setSubjects?: (val: subjectDataType[]) => void;
   url?: string;
-  id?: number;
   semester?: string;
   subject?: any;
 }) => {
@@ -134,7 +132,7 @@ export const AddSubject = ({
     } else if (url === "update") {
       //  if url is update, then update subject
       await axiosPrivateInstance.current
-        .put("/user/subject/update/" + id, data)
+        .put("/user/subject/update/" + subject?.id, data)
         .then((res) => {
           if (res.status === 200) {
             toast({
