@@ -8,10 +8,10 @@ import "react-percentage-bar/dist/index.css";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <AuthProvider>
-      <CookiesProvider defaultSetOptions={{ path: "/" }}>
+    <CookiesProvider defaultSetOptions={{ path: "/" }}>
+      <AuthProvider>
         <App />
-      </CookiesProvider>
-    </AuthProvider>
+      </AuthProvider>
+    </CookiesProvider>
   </React.StrictMode>,
 );

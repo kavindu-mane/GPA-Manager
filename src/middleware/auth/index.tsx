@@ -18,6 +18,7 @@ export const AuthMiddleware = () => {
   useEffect(() => {
     // if user is already loaded
     if (user !== null) {
+      console.log("already loaded :", user);
       setLoading(false);
       return;
     }
@@ -29,6 +30,7 @@ export const AuthMiddleware = () => {
       try {
         const { data } = await axiosPrivateInstance.current.get("/user");
         setUserValue(data?.data);
+        console.log(data?.data);
       } catch (error) {
         setUserValue(null);
         navigate("/login", {
@@ -47,9 +49,9 @@ export const AuthMiddleware = () => {
     };
   }, [
     axiosPrivateInstance,
+    location.pathname,
     cookies,
     location,
-    location.pathname,
     navigate,
     setUserValue,
     user,

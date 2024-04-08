@@ -23,7 +23,7 @@ import { CgArrowsExchangeV } from "react-icons/cg";
 import { ReactNode } from "react";
 
 export const Dashboard = ({ children }: { children: ReactNode }) => {
-  const { user } = useAuth();
+  const { user, setUserValue } = useAuth();
   // initialize axios private instance for authorized requests
   const { axiosPrivateInstance } = useStableRefs();
   const navigate = useNavigate();
@@ -61,6 +61,9 @@ export const Dashboard = ({ children }: { children: ReactNode }) => {
             description: "Redirecting to login...",
             className: "bg-green-500 text-white",
           });
+          // remove user from context
+          setUserValue(null);
+          // navigate to login
           navigate("/login", { replace: true });
         }
       })

@@ -3,7 +3,7 @@ import { useCookies } from "react-cookie";
 
 export const useAxios = () => {
   // get cookies
-  const [cookies] = useCookies(["XSRF-TOKEN", "token"]);
+  const [cookies] = useCookies(["token"]);
 
   // axios private instance
   const axiosPrivateInstance = axios.create({
