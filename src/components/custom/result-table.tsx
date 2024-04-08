@@ -314,7 +314,7 @@ export const ResultTable = ({
             </TableBody>
           </Table>
           {/* button row */}
-          <div className="flex w-full justify-end">
+          <div className="flex pt-5 w-full justify-end">
             {/* delete with dialog */}
             <AlertDialog>
               <AlertDialogTrigger asChild>
